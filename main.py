@@ -110,12 +110,11 @@ def get_ciba():
                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
     }
     r = get(url, headers=headers)
-    note_en = r.json()["content"]
     note_ch = r.json()["note"]
-    return note_ch, note_en
+    return note_ch
  
  
-def send_message(to_user, access_token, region_name, weather, temp, wind_dir, note_ch, note_en):
+def send_message(to_user, access_token, region_name, weather, temp, wind_dir, note_ch):
     url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={}".format(access_token)
     week_list = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
     year = localtime().tm_year
@@ -163,10 +162,6 @@ def send_message(to_user, access_token, region_name, weather, temp, wind_dir, no
             },
             "love_day": {
                 "value": love_days,
-                "color": get_color()
-            },
-            "note_en": {
-                "value": note_en,
                 "color": get_color()
             },
             "note_ch": {
@@ -223,11 +218,10 @@ if __name__ == "__main__":
     region = config["region"]
     weather, temp, wind_dir = get_weather(region)
     note_ch = config["note_ch"]
-    note_en = config["note_en"]
-    if note_ch == "" and note_en == "":
+    if note_ch == "" :
         # 获取词霸每日金句
-        note_ch, note_en = get_ciba()
+        note_ch = get_ciba()
     # 公众号推送消息
     for user in users:
-        send_message(user, accessToken, region, weather, temp, wind_dir, note_ch, note_en)
+        send_message(user, accessToken, region, weather, temp, wind_dir, note_ch)
     os.system("pause")
